@@ -1,8 +1,47 @@
 import Rocket from "../assets/rocket.svg"
 import Plus from "../assets/plus.svg"
 import empty from "../assets/empty-todo.svg"
+import { useState, type FormEvent } from "react";
+
+// primeiro passo: definar o formato da estrutura dos nossos dados
+type Task = {
+  id: string;
+  title: string;
+  completed: boolean;
+}
 
 export default function Home () {
+  const [ tasks, setTasks ] = useState<Task[]>([])
+  // tasks = [0, 1, 2, 3, 4, 5...]
+  // tasks = [
+  //   {
+  //     id: "1";
+  //     title: "praticar ingles";
+  //     completed: false;
+  //   }
+  // ]
+  const [ newTask, setNewTask ] = useState("")
+
+  function handleCreateTasks(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const title = newTask.trim();
+
+    if (!title) return;
+
+    const task: Task = {
+      id: crypto.randomUUID(),
+      title,
+      completed: false
+    };
+
+    console.log(task)
+
+    setTasks((currentTask) => [...currentTask, task]);
+    setNewTask("")
+
+  }
+
   return (
     <main className="text-[#808080]">
       <header className="bg-[#0D0D0D] flex items-center justify-center pt-18 pb-20">
@@ -17,20 +56,26 @@ export default function Home () {
         </div>
       </header>
       {/* input com o botão de criar tarefas */}
-      <section className="max-w-184 mx-auto flex items-center gap-2">
+      {/* z-index: 0 */}
+      <form onSubmit={handleCreateTasks} className="max-w-184 mx-auto flex items-center gap-2 z-0 -mt-6"> 
         <input 
           className="flex-1 border border-[#0D0D0D] 
           outline-none rounded-lg text-[16px] bg-[#262626] p-4 placeholder:text-[#808080]"
           type="text" 
           placeholder="Adicione uma nova tarefa" 
+          onChange={(event) => setNewTask(event.target.value)}
+          aria-label="Nome da nova tarefa"
+          value={newTask}
         />
         <button
+        type="submit"
+        disabled={!newTask.trim()}
           className="bg-[#1E6F9F] flex items-center gap-2 rounded-[9px] p-4 text-[14px] font-bold text-white"
         >
           Criar
           <img src={Plus} alt="Plus" />
         </button>
-      </section>
+      </form>
       {/* lista de tarefas */}
       <section className="max-w-184 mx-auto mt-16">
         <div className="flex items-center justify-between mb-6">
@@ -45,9 +90,9 @@ export default function Home () {
         </div>
         <div className="flex flex-col items-center justify-center gap-4 border-t border-[#333333] rounded-t-2xl pt-16">
           <img src={empty} alt="Empty todo" />
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-[#808080] font-bold text-[14px]">Você ainda não tem tarefas cadastradas</p>
-            <p className="text-[#808080] text-[14px]">Crie tarefas e organize seus itens a fazer</p>
+          <div className="flex flex-col items-center gap-1.5">
+            <p className="text-[#808080] font-bold text-[16px]">Você ainda não tem tarefas cadastradas</p>
+            <p className="text-[#808080] text-[16px]">Crie tarefas e organize seus itens a fazer</p>
           </div>
         </div>
       </section>
